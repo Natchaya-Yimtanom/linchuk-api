@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, Double } from 'typeorm';
+import { T_PRODUCT_TYPE } from 'src/product_type/entity/product_type.entity';
+import { Entity, Column, PrimaryGeneratedColumn, Double, ManyToOne, JoinColumn } from 'typeorm';
 
   @Entity()
   export class T_PRODUCT {
