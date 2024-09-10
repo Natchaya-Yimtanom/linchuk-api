@@ -9,6 +9,8 @@ import { T_SWEET } from './sweet/entity/sweet.entity';
 import { T_PRODUCT_TYPE } from './product_type/entity/product_type.entity';
 import { ProductModule } from './product/product.module';
 import { T_PRODUCT } from './product/entity/product.entity';
+import { UserModule } from './user/user.module';
+import { T_USER } from './user/entity/user.entity';
 
 @Module({
   imports: [
@@ -18,12 +20,14 @@ import { T_PRODUCT } from './product/entity/product.entity';
       entities: [
         T_SWEET, 
         T_PRODUCT_TYPE,
-        T_PRODUCT
+        T_PRODUCT,
+        T_USER
       ],
     }),
     SweetModule,
     ProductTypeModule,
     ProductModule,
+    UserModule,
   ],
 })
 
