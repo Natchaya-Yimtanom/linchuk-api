@@ -11,6 +11,8 @@ import { ProductModule } from './product/product.module';
 import { T_PRODUCT } from './product/entity/product.entity';
 import { UserModule } from './user/user.module';
 import { T_USER } from './user/entity/user.entity';
+import { ReceiptModule } from './receipt/receipt.module';
+import { T_RECEIPT } from './receipt/entity/receipt.entity';
 
 @Module({
   imports: [
@@ -21,13 +23,15 @@ import { T_USER } from './user/entity/user.entity';
         T_SWEET, 
         T_PRODUCT_TYPE,
         T_PRODUCT,
-        T_USER
+        T_USER,
+        T_RECEIPT
       ],
     }),
     SweetModule,
     ProductTypeModule,
     ProductModule,
     UserModule,
+    ReceiptModule,
   ],
 })
 
