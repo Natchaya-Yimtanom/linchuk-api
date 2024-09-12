@@ -14,11 +14,29 @@ export class ProductTypeService {
     ) {}
 
     async create(productTypeDto: ProductType) {
-        const newProductType = {
-            product_type: productTypeDto.product_type,
-        };
-        
-        return this.productTypeRepository.save(newProductType);
+        const allType = await this.productTypeRepository.find();
+        let typeExist = false;
+
+        allType.forEach(elm => {
+            if(elm.product_type == productTypeDto.product_type){
+                typeExist = true;
+            }
+        });
+
+        if(!typeExist){
+            const newProductType = {
+                product_type: productTypeDto.product_type,
+            };
+            
+            return this.productTypeRepository.save(newProductType);
+        } else {
+            const status = {
+                status: false,
+                message: 'มีประเภทสินค้านี้อยู่แล้ว'
+            }
+
+            return  status;
+        }
     }
     
     async findAll() {

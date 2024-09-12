@@ -5,6 +5,7 @@ import { DeleteResult, Repository } from 'typeorm';
 import { UserDto } from './dto/user.dto';
 import { CreateUserDto } from './dto/create_user.dto';
 import * as bcrypt from 'bcrypt';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class UserService {
@@ -67,6 +68,61 @@ export class UserService {
         } else {
             throw new BadRequestException('ไม่มีรหัสพนักงานนี้ในระบบ');
         }
+    }
+
+    async login(loginDto: LoginDto) {
+        const allProfile = await this.userRepository.find();
+        let profile: any;
+
+        allProfile.forEach(elm => {
+            if(elm.email == loginDto.email){
+                profile = elm;
+            }
+        });
+
+        if(profile != null){
+            return bcrypt.compare(loginDto.password, profile.password);
+        } else {
+            return 'ไม่พบบัญชีในระบบ';
+        }
+    }
+
+    async forget(loginDto: LoginDto) {
+        const allProfile = await this.userRepository.find();
+        let profile: any;
+
+        allProfile.forEach(elm => {
+            if(elm.email == loginDto.email){
+                profile = elm;
+            }
+        });
+
+        let status = {
+            status: false,
+            message: ''
+        }
+
+        if(profile != null){
+            status = {
+                status: true,
+                message: profile
+            }
+        } else {
+            status = {
+                status: false,
+                message: 'ไม่พบบัญชีในระบบ'
+            }
+        }
+
+        return status;
+    }
+
+    async newpass(loginDto: LoginDto) {
+        const profile = await this.userRepository.findOne({ where: { user_id: loginDto.user_id } });
+
+        profile.password = await bcrypt.hash(loginDto.password, 10);
+
+        return await this.userRepository.update(loginDto.user_id, profile);
     }
 
     async findAll(): Promise<T_USER[]> {
