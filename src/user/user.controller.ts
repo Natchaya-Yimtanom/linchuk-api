@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { T_USER } from './entity/user.entity';
 import { UserDto } from './dto/user.dto';
 import { CreateUserDto } from './dto/create_user.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('user')
 export class UserController {
@@ -27,6 +28,27 @@ export class UserController {
         @Body() userDto: UserDto
     ){
         return await this.userService.employeeRegister(userDto);
+    }
+
+    @Post('login')
+    async login(
+        @Body() loginDto: LoginDto
+    ){
+        return await this.userService.login(loginDto);
+    }
+
+    @Post('forget')
+    async forget(
+        @Body() loginDto: LoginDto
+    ){
+        return await this.userService.forget(loginDto);
+    }
+
+    @Post('newpass')
+    async newpass(
+        @Body() loginDto: LoginDto
+    ){
+        return await this.userService.newpass(loginDto);
     }
 
     @Get() // GET /user
