@@ -9,7 +9,6 @@ import { PaymentModule } from 'src/payment/payment.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([T_RECEIPT]),
-    PaymentModule
   ],
   controllers: [ReceiptController],
   providers: [ReceiptService],

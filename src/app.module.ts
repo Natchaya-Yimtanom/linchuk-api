@@ -15,6 +15,10 @@ import { ReceiptModule } from './receipt/receipt.module';
 import { T_RECEIPT } from './receipt/entity/receipt.entity';
 import { PaymentModule } from './payment/payment.module';
 import { T_PAYMENT } from './payment/entity/payment.entity';
+import { OrderModule } from './order/order.module';
+import { T_ORDER } from './order/entity/order.entity';
+import { OrderDetailModule } from './order_detail/order_detail.module';
+import { T_ORDER_DETAIL } from './order_detail/entity/order_detail.entity';
 
 @Module({
   imports: [
@@ -27,7 +31,9 @@ import { T_PAYMENT } from './payment/entity/payment.entity';
         T_PRODUCT,
         T_USER,
         T_RECEIPT,
-        T_PAYMENT
+        T_PAYMENT,
+        T_ORDER,
+        T_ORDER_DETAIL
       ],
     }),
     SweetModule,
@@ -36,6 +42,8 @@ import { T_PAYMENT } from './payment/entity/payment.entity';
     UserModule,
     ReceiptModule,
     PaymentModule,
+    OrderModule,
+    OrderDetailModule,
   ],
 })
 
