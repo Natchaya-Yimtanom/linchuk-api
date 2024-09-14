@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { T_USER } from './entity/user.entity';
 import { DeleteResult, Repository } from 'typeorm';
@@ -14,40 +14,40 @@ export class UserService {
         private readonly userRepository: Repository<T_USER>,
     ) {}
 
-    async managerRegister(createUserDto: CreateUserDto) {
-        const { email, password } = createUserDto;
+    // async managerRegister(createUserDto: CreateUserDto) {
+    //     const { email, password } = createUserDto;
 
-        const existingUser = await this.userRepository.findOne({ where: { email } });
-        if (existingUser) {
-            throw new BadRequestException('มีอีเมลนี้ในระบบแล้ว');
-        }
+    //     const existingUser = await this.userRepository.findOne({ where: { email } });
+    //     if (existingUser) {
+    //         throw new BadRequestException('มีอีเมลนี้ในระบบแล้ว');
+    //     }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+    //     const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = {
-            uuid: this.generateRandomString(10),
-            firstname: createUserDto.firstname,
-            lastname: createUserDto.lastname,
-            email: email,
-            password: hashedPassword,
-            role: createUserDto.role,
-            image: createUserDto.image,
-            create_on: new Date(),
-        };
+    //     const newUser = {
+    //         uuid: this.generateRandomString(10),
+    //         firstname: createUserDto.firstname,
+    //         lastname: createUserDto.lastname,
+    //         email: email,
+    //         password: hashedPassword,
+    //         role: createUserDto.role,
+    //         image: createUserDto.image,
+    //         create_on: new Date(),
+    //     };
 
-        return this.userRepository.save(newUser); 
-    }
+    //     return this.userRepository.save(newUser); 
+    // }
 
-    async createEmployee(createUserDto: CreateUserDto) {
-        const newUser = {
-            uuid: this.generateRandomString(10),
-            firstname: createUserDto.firstname,
-            lastname: createUserDto.lastname,
-            role: 'employee',
-            create_on: new Date(),
-        };
+    async createEmployee(createUserDto: CreateUserDto[]) {
+        const users = createUserDto.map(elm => {
+            const user = this.userRepository.create(elm);
+            user.uuid = this.generateRandomString(10);
+            user.role = 'employee';
+            user.create_on = new Date();
+            return user;
+        });
 
-        return this.userRepository.save(newUser);
+        return this.userRepository.save(users);
     }
 
     async employeeRegister(user: UserDto) {
@@ -83,7 +83,7 @@ export class UserService {
         if(profile != null){
             return bcrypt.compare(loginDto.password, profile.password);
         } else {
-            return 'ไม่พบบัญชีในระบบ';
+            throw new NotFoundException('ไม่พบบัญชีในระบบ');
         }
     }
 
@@ -97,24 +97,16 @@ export class UserService {
             }
         });
 
-        let status = {
-            status: false,
-            message: ''
-        }
-
         if(profile != null){
-            status = {
+            let status = {
                 status: true,
                 message: profile
-            }
+            };
+            
+            return status;
         } else {
-            status = {
-                status: false,
-                message: 'ไม่พบบัญชีในระบบ'
-            }
+            throw new NotFoundException('ไม่พบบัญชีในระบบ');
         }
-
-        return status;
     }
 
     async newpass(loginDto: LoginDto) {
