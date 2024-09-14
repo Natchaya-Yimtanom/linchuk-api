@@ -18,7 +18,7 @@ export class UserController {
 
     @Post('manager/add')
     async createEmployee(
-        @Body() createUserDto: CreateUserDto
+        @Body() createUserDto: CreateUserDto[]
     ){
         return await this.userService.createEmployee(createUserDto);
     }

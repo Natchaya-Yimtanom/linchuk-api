@@ -4,53 +4,41 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaymentDto } from './dto/payment.dto';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { ReceiptDto } from 'src/receipt/dto/receipt.dto';
+import { ReceiptService } from 'src/receipt/receipt.service';
 
 @Injectable()
 export class PaymentService {
     constructor(
         @InjectRepository(T_PAYMENT)
         private readonly productRepository: Repository<T_PAYMENT>,
+        private readonly receiptService: ReceiptService
     ) {}
 
-    async create(receiptId: number, paymentDto: PaymentDto) {
-        const receiptList = await this.findAll();
-        let chk = false;
+    async create(receiptDto: ReceiptDto, paymentDto: PaymentDto) {
+        const receiptCreate = await this.receiptService.create(receiptDto);
 
-        receiptList.forEach(elm => {
-            if(elm.receipt_id == receiptId){
-                chk = true;
-            }
-        });
-
-        if(!chk){
-            let newPayment: any;
-            if(paymentDto.pay_type == 'promtpay'){
-                newPayment = {
-                    receipt_id: receiptId,
-                    total_price: paymentDto.total_price,
-                    pay_type: paymentDto.pay_type,
-                    pay_img: paymentDto.pay_img,
-                    create_on: new Date()
-                };
-            } else {
-                newPayment = {
-                    receipt_id: receiptId,
-                    total_price: paymentDto.total_price,
-                    pay_type: paymentDto.pay_type,
-                    cash_receive: paymentDto.cash_receive,
-                    cash_return: paymentDto.cash_return,
-                    create_on: new Date()
-                };
-            }
-            
-            return this.productRepository.save(newPayment);
+        let newPayment: any;
+        if(paymentDto.pay_type == 'promtpay'){
+            newPayment = {
+                receipt_id: receiptCreate.receipt_id,
+                total_price: paymentDto.total_price,
+                pay_type: paymentDto.pay_type,
+                pay_img: paymentDto.pay_img,
+                create_on: new Date()
+            };
         } else {
-            throw new BadRequestException('ไม่สามารถเพิ่มข้อมูลชำระเงินได้', { 
-                cause: new Error(), 
-                description: 'เลขใบเสร็จนี้มีการบันทึกข้อมูลชำระเงินอยู่แล้ว' 
-            })
+            newPayment = {
+                receipt_id: receiptCreate.receipt_id,
+                total_price: paymentDto.total_price,
+                pay_type: paymentDto.pay_type,
+                cash_receive: paymentDto.cash_receive,
+                cash_return: paymentDto.cash_return,
+                create_on: new Date()
+            };
         }
         
+        return this.productRepository.save(newPayment);
     }
     
     async findOne(id: number): Promise<T_PAYMENT> {
