@@ -9,12 +9,12 @@ import { LoginDto } from './dto/login.dto';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @Post('manager/register')
-    async managerRegister(
-        @Body() createUserDto: CreateUserDto
-    ){
-        return await this.userService.managerRegister(createUserDto);
-    }
+    // @Post('manager/register')
+    // async managerRegister(
+    //     @Body() createUserDto: CreateUserDto
+    // ){
+    //     return await this.userService.managerRegister(createUserDto);
+    // }
 
     @Post('manager/add')
     async createEmployee(
