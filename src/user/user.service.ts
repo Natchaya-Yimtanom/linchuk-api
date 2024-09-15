@@ -55,7 +55,7 @@ export class UserService {
         let id = 0;
 
         employee.forEach(elm => {
-            if(elm.uuid == user.uuid && elm.firstname == user.firstname && user.lastname == user.lastname){
+            if(elm.uuid == user.uuid && elm.firstname == user.firstname && elm.lastname == user.lastname){
                 id = elm.user_id;
             }
         });
