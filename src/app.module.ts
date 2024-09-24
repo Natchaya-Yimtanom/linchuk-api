@@ -19,6 +19,7 @@ import { OrderModule } from './order/order.module';
 import { T_ORDER } from './order/entity/order.entity';
 import { OrderDetailModule } from './order_detail/order_detail.module';
 import { T_ORDER_DETAIL } from './order_detail/entity/order_detail.entity';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { T_ORDER_DETAIL } from './order_detail/entity/order_detail.entity';
     PaymentModule,
     OrderModule,
     OrderDetailModule,
+    ReportModule,
   ],
 })
 
