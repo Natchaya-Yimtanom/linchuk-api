@@ -12,6 +12,9 @@ import { ReceiptModule } from 'src/receipt/receipt.module';
   ],
   controllers: [PaymentController],
   providers: [PaymentService],
-  exports: [PaymentService]
+  exports: [
+    PaymentService,
+    TypeOrmModule
+  ]
 })
 export class PaymentModule {}

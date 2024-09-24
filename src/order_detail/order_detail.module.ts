@@ -10,6 +10,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   ],
   controllers: [OrderDetailController],
   providers: [OrderDetailService],
-  exports: [OrderDetailService]
+  exports: [
+    OrderDetailService,
+    TypeOrmModule
+  ]
 })
 export class OrderDetailModule {}

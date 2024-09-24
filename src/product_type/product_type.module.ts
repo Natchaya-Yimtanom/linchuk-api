@@ -11,6 +11,10 @@ import { ProductModule } from 'src/product/product.module';
     ProductModule
   ],
   controllers: [ProductTypeController],
-  providers: [ProductTypeService]
+  providers: [ProductTypeService],
+  exports: [
+    ProductTypeService,
+    TypeOrmModule
+  ]
 })
 export class ProductTypeModule {}

@@ -14,6 +14,9 @@ import { OrderDetailModule } from 'src/order_detail/order_detail.module';
   ],
   controllers: [OrderController],
   providers: [OrderService],
-  exports: [OrderService]
+  exports: [
+    OrderService,
+    TypeOrmModule
+  ]
 })
 export class OrderModule {}
