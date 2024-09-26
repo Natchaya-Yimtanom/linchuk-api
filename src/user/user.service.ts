@@ -73,6 +73,7 @@ export class UserService {
     async login(loginDto: LoginDto) {
         const allProfile = await this.userRepository.find();
         let profile: any;
+        let id: any;
 
         allProfile.forEach(elm => {
             if(elm.email == loginDto.email){
@@ -81,7 +82,8 @@ export class UserService {
         });
 
         if(profile != null){
-            return bcrypt.compare(loginDto.password, profile.password);
+            const loginProfile = await this.userRepository.find({where: { user_id: profile.user_id }});
+            return loginProfile;
         } else {
             throw new NotFoundException('ไม่พบบัญชีในระบบ');
         }

@@ -6,4 +6,7 @@ export class ReceiptDto {
 
     @IsEmpty()
     create_on: Date;
+
+    @IsEmpty()
+    receipt_number: string;
   }
