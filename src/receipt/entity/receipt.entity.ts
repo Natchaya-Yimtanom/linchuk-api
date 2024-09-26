@@ -10,4 +10,7 @@ import { Entity, Column, PrimaryGeneratedColumn, Double, ManyToOne, JoinColumn }
   
     @Column()
     create_on: Date;
+
+    @Column()
+    receipt_number: string;
   }
