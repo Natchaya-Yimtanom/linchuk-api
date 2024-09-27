@@ -53,7 +53,7 @@ export class ReportService {
 
         data['sales'] = saleSum;
 
-        
+
         // get all order in the payment_id
         let orderArr = [];
         await Promise.all(order.map(async elm => {
@@ -62,13 +62,13 @@ export class ReportService {
                 payment_id: elm,
               },
             });
-        
+  
             orderList.forEach(orderItem => {
               orderArr.push(orderItem.order_id);
             });
         }));
-        
-
+  
+  
         // get all order detail in order_id
         let orderDetailArr = [];
         await Promise.all(orderArr.map(async elm => {
@@ -77,13 +77,13 @@ export class ReportService {
                 order_id: elm,
               },
             });
-        
+  
             orderDetailList.forEach(orderItem => {
               orderDetailArr.push(orderItem.order_detail_id);
             });
         }));
-
-
+  
+  
         // get all order detail id in order_detail_id list
         let detail = [];
         await Promise.all(orderDetailArr.map(async elm => {
@@ -92,7 +92,7 @@ export class ReportService {
               order_detail_id: elm,
             },
           });
-
+  
           detailList.forEach(orderDetail => {
             if (!detail.hasOwnProperty(orderDetail.product_id)) {
               detail[orderDetail.product_id] = { product_id: orderDetail.product_id, quantity: orderDetail.quantity };
@@ -101,49 +101,50 @@ export class ReportService {
             }
           });
         }));
-
-
+  
+  
         // get all products base on order detail id
-        let productArr = {};
-        let productType = {};
+        let productArr = [];
+        let productType = [];
         let allCost = 0;
-
+  
         await Promise.all(detail.map(async elm => {
           const productList = await this.productRepository.find({
             where: {
               product_id: elm.product_id,
             },
           });
-      
+  
           for (const product of productList) {
             const productTypeList = await this.productTypeRepository.find({
               where: {
                 product_type_id: product.product_type_id,
               },
             });
-            
+  
             let type = productTypeList[0]['product_type'];
-
-            if (!productArr.hasOwnProperty(product.product_id)) {
-              productArr[product.product_id] = { name: product.product_name, cost: product.product_cost, count: elm.quantity };
-              productType[product.product_type_id] = { name: type, count: (productType[product.product_type_id]?.count || 0) + 1 };
-              allCost += (product.product_cost * elm.quantity);
+  
+            const currentProductType = productType.find(item => item.id === product.product_type_id);
+            if (!currentProductType) {
+              productArr.push({ id: product.product_id, name: product.product_name, cost: product.product_cost, count: elm.quantity });
+              productType.push({ id: product.product_type_id, type, count: (currentProductType?.count || 0) + 1 });
             } else {
-              if(product.product_id == elm.product_id){
-                productArr[product.product_id].count += elm.quantity;
-                productType[product.product_type_id].count += 1;
-                allCost += (product.product_cost * elm.quantity);
-              }
+              const indexProductType = productType.findIndex(item => item.id === product.product_type_id);
+              currentProductType.count += elm.quantity;
+              productType[indexProductType].count += 1;
             }
+  
+            allCost += (product.product_cost * elm.quantity);
+  
           };
         }));
-        
+  
         data['allCost'] = allCost;
         data['profit'] = saleSum - allCost;
         data['products'] = productArr;
         data['types'] = productType;
-
+  
         return data;
     }
-
+  
 }
