@@ -18,7 +18,7 @@ export class OrderDetailService {
     ) {}
 
     async createMultipleRows(orderId: number, orderDetailDto: OrderDetailDto[]): Promise<any[]> {
-        console.log(orderDetailDto);
+        // console.log(orderDetailDto);
         const details = orderDetailDto.map(elm => {
             const detail = this.orderDetailRepository.create(elm);
             detail.order_id = orderId;

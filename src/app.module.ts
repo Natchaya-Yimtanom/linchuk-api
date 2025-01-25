@@ -24,6 +24,10 @@ import { PromotionModule } from './promotion/promotion.module';
 import { T_PROMOTION } from './promotion/entities/promotion.entity';
 import { UnitModule } from './unit/unit.module';
 import { C_UNIT } from './unit/entities/unit.entity';
+import { RecipeModule } from './recipe/recipe.module';
+import { IngredientsModule } from './ingredients/ingredients.module';
+import { T_INGREDIENTS } from './ingredients/entities/ingredient.entity';
+import { T_RECIPE } from './recipe/entities/recipe.entity';
 
 @Module({
   imports: [
@@ -40,7 +44,9 @@ import { C_UNIT } from './unit/entities/unit.entity';
         T_ORDER,
         T_ORDER_DETAIL,
         T_PROMOTION,
-        C_UNIT
+        C_UNIT,
+        T_INGREDIENTS,
+        T_RECIPE
       ],
     }),
     SweetModule,
@@ -54,6 +60,8 @@ import { C_UNIT } from './unit/entities/unit.entity';
     ReportModule,
     PromotionModule,
     UnitModule,
+    RecipeModule,
+    IngredientsModule,
   ],
 })
 
