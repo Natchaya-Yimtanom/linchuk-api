@@ -12,4 +12,7 @@ export class CreatePromotionDto {
 
     @IsEmpty()
     end_date: Date;
+
+    @IsEmpty()
+    product_id: number;
   }

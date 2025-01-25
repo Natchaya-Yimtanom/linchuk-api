@@ -16,4 +16,7 @@ import { Entity, Column, PrimaryGeneratedColumn, Double, ManyToOne, JoinColumn }
 
     @Column()
     end_date: Date;
+
+    @Column()
+    product_id: number;
   }
