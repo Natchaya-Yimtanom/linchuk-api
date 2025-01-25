@@ -11,17 +11,8 @@ export class ProductDto {
     product_cost: number;
 
     @IsEmpty()
-    product_quantity: number;
-
-    @IsEmpty()
     product_type_id: number;
 
     @IsEmpty()
     product_image: string;
-
-    @IsEmpty()
-    order_date: Date;
-
-    @IsEmpty()
-    expire_date: Date;
   }

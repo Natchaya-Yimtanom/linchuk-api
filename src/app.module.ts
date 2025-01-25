@@ -20,6 +20,8 @@ import { T_ORDER } from './order/entity/order.entity';
 import { OrderDetailModule } from './order_detail/order_detail.module';
 import { T_ORDER_DETAIL } from './order_detail/entity/order_detail.entity';
 import { ReportModule } from './report/report.module';
+import { PromotionModule } from './promotion/promotion.module';
+import { T_PROMOTION } from './promotion/entities/promotion.entity';
 
 @Module({
   imports: [
@@ -34,7 +36,8 @@ import { ReportModule } from './report/report.module';
         T_RECEIPT,
         T_PAYMENT,
         T_ORDER,
-        T_ORDER_DETAIL
+        T_ORDER_DETAIL,
+        T_PROMOTION
       ],
     }),
     SweetModule,
@@ -46,6 +49,7 @@ import { ReportModule } from './report/report.module';
     OrderModule,
     OrderDetailModule,
     ReportModule,
+    PromotionModule,
   ],
 })
 

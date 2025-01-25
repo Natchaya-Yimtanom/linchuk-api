@@ -16,11 +16,11 @@ export class ProductService {
             product_name: productDto.product_name,
             product_price: productDto.product_price,
             product_cost: productDto.product_cost,
-            product_quantity: productDto.product_quantity,
+            // product_quantity: productDto.product_quantity,
             product_type_id: productDto.product_type_id,
             product_image: productDto.product_image,
-            order_date: productDto.order_date,
-            expire_date: productDto.expire_date,
+            // order_date: productDto.order_date,
+            // expire_date: productDto.expire_date,
         };
         
         return this.productRepository.save(newProduct);

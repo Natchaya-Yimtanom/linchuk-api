@@ -46,7 +46,7 @@ export class OrderDetailService {
         orderDetailDto.map(async elm => {
             console.log(elm);
             const products: T_PRODUCT[] = await this.productRepository.find({ where: {product_id: elm.product_id} });
-            products[0].product_quantity -= elm.quantity;
+            // products[0].product_quantity -= elm.quantity;
             this.productRepository.save(products);
         });
     }
