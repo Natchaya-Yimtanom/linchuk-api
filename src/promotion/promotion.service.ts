@@ -18,6 +18,7 @@ export class PromotionService {
       discount_amount: createPromotionDto.discount_amount,
       start_date: createPromotionDto.start_date,
       end_date: createPromotionDto.end_date,
+      product_id: createPromotionDto.product_id,
     };
   
     return this.promotionRepo.save(newPromotion);

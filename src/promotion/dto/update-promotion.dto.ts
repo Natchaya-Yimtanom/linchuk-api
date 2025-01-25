@@ -14,4 +14,7 @@ export class UpdatePromotionDto extends PartialType(CreatePromotionDto) {
 
     @IsEmpty()
     end_date: Date;
+
+    @IsEmpty()
+    product_id: number;
 }
