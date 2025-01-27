@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { T_RECIPE } from './entities/recipe.entity';
 import { Repository } from 'typeorm';
 import { T_PRODUCT } from 'src/product/entity/product.entity';
+import { create } from 'domain';
 
 @Injectable()
 export class RecipeService {
@@ -17,40 +18,67 @@ export class RecipeService {
   ) {}
 
   async createMultipleRows(productId: number, createRecipeDto: CreateRecipeDto[]) {
-    const productDetail = this.productRepo.find({ where: {product_id: productId} });
-    let saveRows: any[];
+    const existingRecipes = await this.recipeRepo.find({ where: { product_id: productId } });
+    if (existingRecipes.length > 0) {
+      return {
+        status: false,
+        message: `สินค้าหมายเลข ${productId} มีสูตรอยู่แล้ว`
+      };
+    }
+
+    const productDetail = await this.productRepo.findOne({ where: { product_id: productId } });
+    if (!productDetail) {
+      return {
+        status: false,
+        message: `หาสินค้าหมายเลข ${productId} ไม่พบ`
+      };
+    }
 
     const details = createRecipeDto.map(elm => {
-      let temp: any[];
-      temp['product_id'] = productId;
-      temp['product_name'] = productDetail['product_name'];
-      temp['ingredients_id'] = elm.ingredients_id;
-      temp['ingredients_name'] = elm.ingredients_name;
-      temp['amount'] = elm.amount;
-      temp['unit_id'] = elm.unit_id;
-      temp['unit'] = elm.unit;
-
-      saveRows.push(elm);
+      const detail = this.recipeRepo.create(elm);
+      detail.product_id = productId;
+      detail.product_name = productDetail.product_name;
+      return detail;
     });
 
-    return await this.recipeRepo.save(saveRows);
+    return await this.recipeRepo.save(details);
   }
 
-
-
-  findAll() {
-    return `This action returns all recipe`;
+  async findAll() {
+    return await this.recipeRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} recipe`;
+  async findOne(id: number) {
+    return await this.recipeRepo.findOne({ where: { recipe_id: id } });
   }
 
-  update(id: number, updateRecipeDto: UpdateRecipeDto) {
-    return `This action updates a #${id} recipe`;
+  async updateMultipleRows(productId: number, updateRecipeDto: UpdateRecipeDto[]) {
+    const recipeDetails = await this.recipeRepo.find({ where: { product_id: productId } });
+
+    if (!recipeDetails || recipeDetails.length === 0) {
+      throw new Error(`No recipe details found for product ID: ${productId}`);
+    }
+
+    const updatedDetails = recipeDetails.map((existingDetail) => {
+      const updateData = updateRecipeDto.find(
+        (dto) => dto.ingredients_id === existingDetail.ingredients_id
+      );
+
+      if (!updateData) return existingDetail;
+
+      return {
+        ...existingDetail,
+        ingredients_name: updateData.ingredients_name,
+        amount: updateData.amount,
+        unit_id: updateData.unit_id,
+        unit: updateData.unit,
+      };
+    });
+
+    return await this.recipeRepo.save(updatedDetails);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} recipe`;
+  async remove(id: number) {
+    return await this.recipeRepo.delete({ recipe_id: id });
   }
 }

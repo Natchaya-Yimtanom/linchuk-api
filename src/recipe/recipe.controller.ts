@@ -15,23 +15,23 @@ export class RecipeController {
         return await this.recipeService.createMultipleRows(productId, createRecipeDto);
     }
 
-  // @Get()
-  // findAll() {
-  //   return this.recipeService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.recipeService.findAll();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.recipeService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.recipeService.findOne(+id);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateRecipeDto: UpdateRecipeDto) {
-  //   return this.recipeService.update(+id, updateRecipeDto);
-  // }
+  @Patch(':id')
+  async update(@Param('id') productId: number, @Body() updateRecipeDto: UpdateRecipeDto[]) {
+    return await this.recipeService.updateMultipleRows(productId, updateRecipeDto);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.recipeService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.recipeService.remove(+id);
+  }
 }
