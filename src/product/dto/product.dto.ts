@@ -15,4 +15,7 @@ export class ProductDto {
 
     @IsEmpty()
     product_image: string;
+
+    @IsEmpty()
+    promotion_id: number;
   }

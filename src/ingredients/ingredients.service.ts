@@ -4,12 +4,16 @@ import { UpdateIngredientDto } from './dto/update-ingredient.dto';
 import { T_INGREDIENTS } from './entities/ingredient.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { T_RECIPE } from 'src/recipe/entities/recipe.entity';
 
 @Injectable()
 export class IngredientsService {
   constructor(
     @InjectRepository(T_INGREDIENTS)
     private readonly ingredientsRepo: Repository<T_INGREDIENTS>,
+
+    @InjectRepository(T_RECIPE)
+    private readonly recipeRepo: Repository<T_RECIPE>,
   ) {}
 
   async create(createIngredientDto: CreateIngredientDto) {
@@ -41,6 +45,16 @@ export class IngredientsService {
   }
 
   async delete(id: number): Promise<DeleteResult> {
-      return await this.ingredientsRepo.delete({ ingredients_id: id });
+    return await this.recipeRepo.manager.transaction(async (transactionalEntityManager) => {
+      const recipes = await transactionalEntityManager.find(T_RECIPE, {
+        where: { ingredients_id: id }, 
+      });
+  
+      for (const recipe of recipes) {
+        await transactionalEntityManager.delete(T_RECIPE, { recipe_id: recipe.recipe_id });
+      }
+  
+      return await transactionalEntityManager.delete(T_INGREDIENTS, { ingredients_id: id });
+    });
   }
 }
