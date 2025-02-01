@@ -3,12 +3,16 @@ import { T_PRODUCT } from './entity/product.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductDto } from './dto/product.dto';
+import { T_RECIPE } from 'src/recipe/entities/recipe.entity';
 
 @Injectable()
 export class ProductService {
     constructor(
         @InjectRepository(T_PRODUCT)
         private readonly productRepository: Repository<T_PRODUCT>,
+
+        @InjectRepository(T_RECIPE)
+        private readonly recipeRepo: Repository<T_RECIPE>,
     ) {}
 
     async create(productDto: ProductDto) {
@@ -21,6 +25,7 @@ export class ProductService {
             product_image: productDto.product_image,
             // order_date: productDto.order_date,
             // expire_date: productDto.expire_date,
+            promotion_id: productDto.promotion_id,
         };
         
         return this.productRepository.save(newProduct);
@@ -39,6 +44,19 @@ export class ProductService {
     }
     
     async delete(id: number): Promise<DeleteResult> {
-        return await this.productRepository.delete({ product_id: id });
+        return await this.recipeRepo.manager.transaction(async (transactionalEntityManager) => {
+            // 1️⃣ Find all recipes that contain this ingredient
+            const recipes = await transactionalEntityManager.find(T_RECIPE, {
+              where: { product_id: id },
+            });
+        
+            // 2️⃣ Delete all found recipes from T_RECIPE
+            for (const recipe of recipes) {
+              await transactionalEntityManager.delete(T_RECIPE, { recipe_id: recipe.recipe_id });
+            }
+        
+            // 3️⃣ Now delete the ingredient from T_PRODUCT
+            return await transactionalEntityManager.delete(T_PRODUCT, { product_id: id });
+          });
     }
 }

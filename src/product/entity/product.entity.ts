@@ -20,4 +20,7 @@ import { Entity, Column, PrimaryGeneratedColumn, Double, ManyToOne, JoinColumn }
 
     @Column({ length: 1400 })
     product_image: string;
+
+    @Column()
+    promotion_id: number;
   }
