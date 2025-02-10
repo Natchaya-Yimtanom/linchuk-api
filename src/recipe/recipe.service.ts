@@ -49,7 +49,7 @@ export class RecipeService {
   }
 
   async findOne(id: number) {
-    return await this.recipeRepo.findOne({ where: { recipe_id: id } });
+    return await this.recipeRepo.find({ where: { product_id: id } });
   }
 
   async updateMultipleRows(productId: number, updateRecipeDto: UpdateRecipeDto[]) {
@@ -74,6 +74,8 @@ export class RecipeService {
         unit: updateData.unit,
       };
     });
+
+    // console.log(updatedDetails)
 
     return await this.recipeRepo.save(updatedDetails);
   }
