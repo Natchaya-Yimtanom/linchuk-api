@@ -4,6 +4,7 @@ import { DeleteResult, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductDto } from './dto/product.dto';
 import { T_RECIPE } from 'src/recipe/entities/recipe.entity';
+import { T_PROMOTION } from 'src/promotion/entities/promotion.entity';
 
 @Injectable()
 export class ProductService {
@@ -13,6 +14,9 @@ export class ProductService {
 
         @InjectRepository(T_RECIPE)
         private readonly recipeRepo: Repository<T_RECIPE>,
+
+        @InjectRepository(T_PROMOTION)
+        private readonly promotionRepo: Repository<T_PROMOTION>,
     ) {}
 
     async create(productDto: ProductDto) {
@@ -36,7 +40,22 @@ export class ProductService {
     }
     
     async findAll(): Promise<T_PRODUCT[]> {
-        return await this.productRepository.find();
+        const products = await this.productRepository.find();
+        let returnArr = products;
+
+        for (const elm of returnArr) {
+            if (elm.promotion_id != null) {
+                const promotion = await this.promotionRepo.findOne({
+                    where: { promotion_id: elm.promotion_id }
+                });
+        
+                if (promotion) {
+                    elm['discount_amount'] = promotion.discount_amount;
+                }
+            }
+        }
+
+        return returnArr;
     }
 
     async update(id: number, product: ProductDto) {

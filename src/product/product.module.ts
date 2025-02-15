@@ -4,11 +4,13 @@ import { ProductService } from './product.service';
 import { T_PRODUCT } from './entity/product.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RecipeModule } from 'src/recipe/recipe.module';
+import { PromotionModule } from 'src/promotion/promotion.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([T_PRODUCT]),
     forwardRef(() => RecipeModule),
+    PromotionModule
   ],
   controllers: [ProductController],
   providers: [ProductService],
