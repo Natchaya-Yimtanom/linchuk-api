@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { count } from 'console';
+import { lastValueFrom } from 'rxjs';
 import { T_ORDER } from 'src/order/entity/order.entity';
 import { T_ORDER_DETAIL } from 'src/order_detail/entity/order_detail.entity';
 import { T_PAYMENT } from 'src/payment/entity/payment.entity';
@@ -8,6 +9,7 @@ import { T_PRODUCT } from 'src/product/entity/product.entity';
 import { ProductService } from 'src/product/product.service';
 import { T_PRODUCT_TYPE } from 'src/product_type/entity/product_type.entity';
 import { T_RECEIPT } from 'src/receipt/entity/receipt.entity';
+import { T_USER } from 'src/user/entity/user.entity';
 import { Between, Repository } from 'typeorm';
 
 @Injectable()
@@ -30,29 +32,52 @@ export class ReportService {
 
         @InjectRepository(T_PRODUCT_TYPE)
         private readonly productTypeRepository: Repository<T_PRODUCT_TYPE>,
+
+        @InjectRepository(T_USER)
+        private readonly userRepo: Repository<T_USER>,
     ) {}
 
     async findAllInRange(startDate: Date, endDate: Date) {
         let data = {};
 
         // get payment in date range
-        const payment = this.paymentRepository.find({
+        const payment = await this.paymentRepository.find({
           where: {
             create_on: Between(startDate, endDate),
           },
+          order: {
+            payment_id: 'ASC'
+          }
         });
 
-        data['allOrder'] = (await payment).length;
+        data['allOrder'] = (payment).length;
 
         let saleSum = 0;
         let order = [];
-        (await payment).forEach(elm => {
+        let orderDetail = [];
+        (payment).forEach(async elm => {
             saleSum += elm.total_price;
             order.push(elm.payment_id);
+
+            const receipt = await this.receiptRepository.find({ where: {
+              receipt_id: elm.receipt_id,
+            }, })
+
+            const user = await this.userRepo.find({where: {
+              user_id: receipt[0].user_id
+            }})
+
+            orderDetail.push({
+              id: elm.payment_id,
+              order_date: elm.create_on,
+              receipt_no: receipt[0].receipt_number,
+              payment_type: elm.pay_type,
+              user_name: user[0].firstname + ' ' + user[0].lastname,
+              total: elm.total_price
+            })
         });
 
         data['sales'] = saleSum;
-
 
         // get all order in the payment_id
         let orderArr = [];
@@ -107,6 +132,11 @@ export class ReportService {
         let productArr = [];
         let productType = [];
         let allCost = 0;
+
+        const productTypeList = await this.productTypeRepository.find({});
+        productTypeList.forEach(elm => {
+          productType.push({ id: elm.product_type_id, type: elm.product_type, count: 0 });
+        });
   
         await Promise.all(detail.map(async elm => {
           const productList = await this.productRepository.find({
@@ -116,26 +146,28 @@ export class ReportService {
           });
   
           for (const product of productList) {
-            const productTypeList = await this.productTypeRepository.find({
-              where: {
-                product_type_id: product.product_type_id,
-              },
-            });
+            // const productTypeList = await this.productTypeRepository.find({
+            //   where: {
+            //     product_type_id: product.product_type_id,
+            //   },
+            // });
   
-            let type = productTypeList[0]['product_type'];
+            // let type = productTypeList[0]['product_type'];
   
             const currentProductType = productType.find(item => item.id === product.product_type_id);
-            if (!currentProductType) {
-              productArr.push({ id: product.product_id, name: product.product_name, cost: product.product_cost, count: elm.quantity });
-              productType.push({ id: product.product_type_id, type, count: (currentProductType?.count || 0) + 1 });
-            } else {
+
+            // if (!currentProductType) {
+            //   productArr.push({ id: product.product_id, name: product.product_name, cost: product.product_cost, count: elm.quantity });
+            //   productType.push({ id: product.product_type_id, type, count: (currentProductType?.count || 0) + 1 });
+            // } else {
               const indexProductType = productType.findIndex(item => item.id === product.product_type_id);
               currentProductType.count += elm.quantity;
+              productArr.push({ id: product.product_id, name: product.product_name, cost: product.product_cost, count: elm.quantity });
               productType[indexProductType].count += 1;
-            }
+            // }
   
             allCost += (product.product_cost * elm.quantity);
-  
+            
           };
         }));
   
@@ -143,6 +175,7 @@ export class ReportService {
         data['profit'] = saleSum - allCost;
         data['products'] = productArr;
         data['types'] = productType;
+        data['order'] = orderDetail;
   
         return data;
     }

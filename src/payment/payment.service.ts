@@ -19,7 +19,7 @@ export class PaymentService {
         const receiptCreate = await this.receiptService.create(receiptDto);
 
         let newPayment: any;
-        if(paymentDto.pay_type == 'promtpay'){
+        if(paymentDto.pay_type == 'promptpay'){
             newPayment = {
                 receipt_id: receiptCreate.receipt_id,
                 total_price: paymentDto.total_price,

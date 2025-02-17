@@ -4,12 +4,16 @@ import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { T_PROMOTION } from './entities/promotion.entity';
 import { DeleteResult, Repository } from 'typeorm';
+import { T_PRODUCT } from 'src/product/entity/product.entity';
 
 @Injectable()
 export class PromotionService {
   constructor(
     @InjectRepository(T_PROMOTION)
     private readonly promotionRepo: Repository<T_PROMOTION>,
+
+    @InjectRepository(T_PRODUCT)
+    private readonly productRepo: Repository<T_PRODUCT>,
   ) {}
 
   async create(createPromotionDto: CreatePromotionDto) {
@@ -20,8 +24,19 @@ export class PromotionService {
       end_date: createPromotionDto.end_date,
       product_id: createPromotionDto.product_id,
     };
-  
-    return this.promotionRepo.save(newPromotion);
+
+    const savedPromotion = await this.promotionRepo.save(newPromotion);
+
+    const product = await this.productRepo.findOne({ where: { product_id: createPromotionDto.product_id } });
+
+    if (!product) {
+      throw new Error('ไม่พบข้อมูลสินค้า');
+    }
+
+    product.promotion_id = savedPromotion.promotion_id;
+    await this.productRepo.save(product);
+
+    return savedPromotion;
   }
 
   async findOne(id: number): Promise<T_PROMOTION> {
