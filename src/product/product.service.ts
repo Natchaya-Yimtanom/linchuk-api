@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProductDto } from './dto/product.dto';
 import { T_RECIPE } from 'src/recipe/entities/recipe.entity';
 import { T_PROMOTION } from 'src/promotion/entities/promotion.entity';
+import sharp from 'sharp';
 
 @Injectable()
 export class ProductService {
